@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="system-weather-api-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="system-weather-api-config" raml="system-weather-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration doc:name="Configuration" doc:id="968925a2-829a-4ec4-8487-48e0c744b4d6" defaultErrorHandler-ref="common-error-handlerError_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="88088117-58a7-4517-ac0b-f72e73970509" file="local.properties" />
+	<global-property doc:name="Global Property" doc:id="93a5e806-34b3-45b2-955b-dfb31681a82e" name="env" value="local" />
+	<api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="d4b8c80f-88c4-4af0-acb7-6fd4d22be4e3" flowRef="system-weather-api-main" />
+	<flow name="system-weather-api-main">
+        <http:listener config-ref="system-weather-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="system-weather-api-config" />
+    </flow>
+    <flow name="system-weather-api-console">
+        <http:listener config-ref="system-weather-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="system-weather-api-config" />
+    </flow>
+    <flow name="post:\getCities:application\json:system-weather-api-config">
+        <logger level="INFO" message="post:\getCities:application\json:system-weather-api-config" />
+		<flow-ref doc:name="getCities-subflow" doc:id="39f19655-d59f-43fd-a87b-978e241976cd" name="getCities-subflow"/>
+    </flow>
+    <flow name="post:\getWeather:application\json:system-weather-api-config">
+        <logger level="INFO" message="post:\getWeather:application\json:system-weather-api-config" />
+		<flow-ref doc:name="get-weather-subflow" doc:id="d1d2d635-8462-4433-b4f9-fc1a661fec9c" name="get-weather-subflow"/>
+    </flow>
+</mule>

@@ -1,0 +1,45 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/68e002e4-282c-4556-aa7c-882e71952f37/ # 
+title: system-weather-api
+version: v1
+
+types:
+  cities-request: !include schema/getCitiesRequest.raml
+  weather-request: !include schema/getWeather.raml
+traits:
+  responseCode: !include traits/responsecodes.raml
+  corelated:
+    usage: Apply this trait when requiring an 'X-Correlation-ID' header
+    description: Trace requests end-to-ened with an 'X-Correlation-ID' header
+    headers: &correlationID
+      X-Correlation-ID:
+        description: |
+           A unique Identifier, eg: UUID, for end to end request tracing.
+        displayName: Correlation ID
+        required: false
+        type: string       
+
+/getCities:
+  is: [responseCode, corelated]
+  post:
+    body:
+      application/json:
+        type: cities-request
+    responses:
+      201:
+        body:
+          application/json:
+            description: "Success"
+/getWeather:
+  is: [responseCode, corelated]
+  post:
+    body:
+      application/json:
+        type: weather-request
+           
+    responses:
+      201:
+        body:
+          application/json:
+            description: "Success"
+    

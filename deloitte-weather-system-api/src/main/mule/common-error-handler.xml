@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="common-error-handlerError_Handler" doc:id="945337b0-a281-4e83-a871-f74e335328c4" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e26a2c8d-6fd9-46e5-b194-4641966c1939" type="APIKIT:BAD_REQUEST">
+			<set-variable value="BAD_REQUEST" doc:name="Set Variable" doc:id="774cb736-b6ec-4597-8048-3996413c316f" variableName="errorType"/>
+			<set-variable value="400" doc:name="Set Variable" doc:id="daf706ec-8812-4da7-b343-e1e4d8a8ad2e" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="f3019518-0afe-4b0d-9fa7-2ccca0db1365" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="f1905ba5-8724-45f2-925d-347d7edbb960" name="setErrorPayload"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2d863419-3ca6-4e15-9735-506c797e91cf" type="EXPRESSION" when="error.muleMessage.payload.errors !=null">
+			<set-variable value="500" doc:name="Set Variable" doc:id="3395a27a-c93d-4155-bcba-f0454bab157e" variableName="httpStatus"/>
+			<set-variable value="SERVER_ERROR" doc:name="Set Variable" doc:id="0799eb02-c591-4f11-9276-2b0c0a8f9a6f" variableName="errorType"/>
+			<set-variable value="#[error.muleMessage.payload.errors[0].detail]" doc:name="Set Variable" doc:id="b978b835-a4fd-4d23-9755-6ad9261655a2" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="b761b3e7-30ff-487e-b414-a18e0079dec9" name="setErrorPayload"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="65c7d0ab-2107-42bb-82a4-4b2988a99e7a" type="APIKIT:NOT_FOUND">
+			<set-variable value="NOT_FOUND" doc:name="Set Variable" doc:id="bc6c645a-5dc2-49e3-818d-b982eaca2930" variableName="errorType"/>
+			<set-variable value="404" doc:name="Set Variable" doc:id="85ef5f9f-e079-465a-abad-942de69b10fb" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="37c594f3-215c-44e3-867c-09045f3acb70" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="c8ca7a22-7ce2-401e-8960-7d62cd14d197" name="setErrorPayload"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36f073dd-dccd-4378-8f13-81ef6499971d" type="APIKIT:METHOD_NOT_ALLOWED">
+			<set-variable value="METHOD_NOT_ALLOWED" doc:name="Set Variable" doc:id="e816dde9-01d8-45d2-a621-a623ea92a93f" variableName="errorType"/>
+			<set-variable value="405" doc:name="Set Variable" doc:id="d729d990-8d5f-4122-8f89-506a578f96d4" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="fdad22e5-c738-4a20-8ab0-a537aea238fc" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="9823862f-8331-47f6-b273-990179f7d4b6" name="setErrorPayload"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5a04ed4a-c9bd-4a87-be42-bc537327fffc" type="APIKIT:NOT_ACCEPTABLE">
+			<set-variable value="NOT_ACCEPTABLE" doc:name="Set Variable" doc:id="bc7b9dbe-28ce-45b7-bdfb-cc09a0132553" variableName="errorType"/>
+			<set-variable value="406" doc:name="Set Variable" doc:id="89661b25-b8ff-4d0f-9c25-7cc3b4dcbb57" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="5d9db239-5bdf-40d7-8d78-0f678ec21178" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="10f837f8-1a3d-4baf-a31f-0ccdc5bae40e" name="setErrorPayload"/>
+
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9aafdcb3-048a-444b-838c-853e291480d2" type="APIKIT_UNSUPPORTED_MEDIA_TYPE">
+			<set-variable value="UNSUPPORTED_MEDIA_TYPE" doc:name="Set Variable" doc:id="085c3af4-5f3f-4e82-9ddf-32b52acb1c09" variableName="errorType"/>
+			<set-variable value="415" doc:name="Set Variable" doc:id="ddd3597d-076c-4e6f-a74f-b08370e88d3c" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="ab990891-b710-4a40-8f7f-28afaecc9a82" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="1cd3e91b-1ea5-4a92-8062-89fa4e5a6275" name="setErrorPayload"/>
+
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c98b43bb-3b1f-4318-8895-0ce909ac8cd7" >
+			<set-variable value="METHOD_NOT_ALLOWED" doc:name="Set Variable" doc:id="08124007-5a6b-45b6-ae24-b8a9ddc671ac" variableName="errorType"/>
+			<set-variable value="405" doc:name="Set Variable" doc:id="22156a3a-93c6-448c-b1e8-cbeb4003f443" variableName="httpStatus"/>
+			<set-variable value="#[error.description]" doc:name="Set Variable" doc:id="aef24731-b117-4886-9aec-b9e17e521cfb" variableName="errorMessage"/>
+			<flow-ref doc:name="setErrorPayload" doc:id="08b8c0cd-093f-424e-bb7c-c648c9318918" name="setErrorPayload"/>
+
+		</on-error-propagate>
+	</error-handler>
+	<sub-flow name="setErrorPayload" doc:id="c84473b4-b617-4f7d-8454-710e7a9f8d94" >
+		<ee:transform doc:name="Transform Message" doc:id="55adae21-267d-4827-a1e7-64cd168bbb0e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json skipNullOn= "everywhere"
+---
+{
+	error:[
+		"errorType": vars.errorType,
+		"description": vars.errorMessage,
+		"statusCode": vars.httpStatus
+		]
+
+}	]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

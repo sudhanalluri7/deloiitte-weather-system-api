@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="5e1579e2-8107-4b6a-8fa5-7ae346ff2c67" >
+		<wsc:connection wsdlLocation="C:\Users\Suman\Desktop\global-weather.wsdl" service="GlobalWeather" port="GlobalWeatherSoap" address="http://localhost:8080/GlobalWeather" />
+	</wsc:config>
+	<sub-flow name="getCities-subflow" doc:id="d099cdc1-54dc-47af-8b51-8ed2cbfe4a6c" >
+		<logger level="INFO" doc:name="Logger" doc:id="64837427-7ea3-416d-a0b0-945695f4caf5" message="#[correlationID] - START - get cities flow]"/>
+		<ee:transform doc:name="Transform Message" doc:id="7d70c6bb-356d-4e0f-a925-2d633464e43c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.webserviceX.NET
+---
+{
+	ns0#GetCitiesByCountry: {
+		ns0#CountryName: payload.countryName
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="GetCitiesByCountry" doc:name="GET Cities Consume" doc:id="6d3c20fc-967d-4759-9836-d6133aba65d8" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="c1f9a84d-62de-48bd-81ea-00d4b6cc61f6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.webserviceX.NET
+---
+{
+	result: payload.body.ns0#GetCitiesByCountryResponse.ns0#GetCitiesByCountryResult default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9bd6c7b8-c9ac-4b96-a91f-df95d3854bf4" message="#[correlationID] - STOP - get cities flow]"/>
+	</sub-flow>
+	<sub-flow name="get-weather-subflow" doc:id="431c8c79-13b7-4bc9-9048-92e878227c20" >
+		<logger level="INFO" doc:name="Logger" doc:id="fb0cb564-b751-4446-8e7e-4212f3722d47" message="#[correlationID] - STARt - get weather flow]"/>
+		<ee:transform doc:name="Transform Message" doc:id="ea82446f-6cff-422c-a59b-6c7124fbaa87" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.webserviceX.NET
+---
+{
+	ns0#GetWeather: {
+		ns0#CityName: payload.cityName,
+		ns0#CountryName: payload.countryName
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="GetWeather" doc:name="GET weather Consume" doc:id="6af2ae32-10c0-4b28-98d8-f0336cb1d9c1" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="4f284e8d-0f73-464b-a5ec-82dee83d5697" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 http://www.webserviceX.NET
+---
+{
+	result: payload.body.ns0#GetWeatherResponse.ns0#GetWeatherResult default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e399abf6-4700-4020-9493-a5e9f115c94d" message="#[correlationID] - STOP - get weather flow]"/>
+	</sub-flow>
+</mule>

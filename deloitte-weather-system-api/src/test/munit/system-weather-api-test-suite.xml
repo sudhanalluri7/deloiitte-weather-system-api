@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="system-weather-api-test-suite.xml" />
+	<munit:test name="system-weather-api-test-suite-post:\getCities:application\json:system-weather-api-configTest" description="Test" doc:id="6327101b-157c-4c52-87d8-33d97302abe2" >
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock WS consume" doc:id="8cf83b84-d08b-4d58-b14e-0273d566936b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="GET Cities Consume" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{
+  "countryName" : "USA"
+}]'/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\getCities:application\json:system-weather-api-config" doc:id="8b1004ad-51f1-4dd1-90ae-2f9d621489bf" name="post:\getCities:application\json:system-weather-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="1d4209c0-8df7-4846-aac1-fb46556213ae" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="The payload should not be null"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="system-weather-api-test-suite-post:\getWeather:application\json:system-weather-api-configTest" description="Test" doc:id="6d45f08f-bee4-4281-979e-b0ee084ef161" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="070c231d-e339-4e7d-8acd-c6f23c45e246" processor="#[http:request]">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="GET weather Consume" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{
+  "cityName" :  "UA",
+  "countryName" : "USA"
+ }]'/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\getWeather:application\json:system-weather-api-config" doc:id="74d36699-8463-49b4-853b-d90fe886b8e3" name="post:\getWeather:application\json:system-weather-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="44a74988-1c41-4064-8c5e-0c0b79cfdbcf" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="The payload should not be null"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

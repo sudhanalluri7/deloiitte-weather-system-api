@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="json" format="json">
+      <types:shape format="weave" example="examples/adsress.json"><![CDATA[%dw 2.0
+type json = Array<{|
+  name: String, 
+  Summary: String, 
+  FromAddress: String, 
+  ToAddress: String, 
+  Date: String
+|}> {"MetadataFormat": "json",
+"example": "[{\"name\":\"MULESOFT\",\"Summary\":\"Noted\",\"FromAddress\":\"AUS\",\"ToAddress\":\"IND\",\"Date\":\"15052018\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="xml" format="xml">
+      <types:example format="xml" element="{http://www.w3.org/2001/XMLSchema}schema" location="examples/global-weather.wsdl"/>
+    </types:type>
+    <types:type name="json1" format="json">
+      <types:shape format="weave" example="examples/weather-example"><![CDATA[%dw 2.0
+type json1 = {|
+  cityName: String, 
+  countryName: String
+|} {"MetadataFormat": "json",
+"example": "{\"cityName\":\"UA\",\"countryName\":\"USA\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#2e1cb02c-13c5-422f-819e-4b1156a8fe90">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7d70c6bb-356d-4e0f-a925-2d633464e43c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="json1"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c1f9a84d-62de-48bd-81ea-00d4b6cc61f6">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json1"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ea82446f-6cff-422c-a59b-6c7124fbaa87">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="json1"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4f284e8d-0f73-464b-a5ec-82dee83d5697">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json1"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
